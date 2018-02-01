@@ -14,9 +14,20 @@ let persons = [
     {name: "Lea Kutvonen", number: "040-123456", id: 4}
 ]
 
-stripId = (request) => Number(request.params.id)
+const stripId = (request) => Number(request.params.id)
 
-randomId = () => Math.floor(Math.random() * idMax)
+const randomId = () => Math.floor(Math.random() * idMax)
+
+const validationErrors = (person) => {
+    const errors = []
+    if (!person.name || !person.number) {
+        errors.push('Missing name or number. ')
+    } else if (persons.find(p => p.name == person.name)) {
+        errors.push('Name must be unique')
+    }
+    return errors
+}
+
 
 app.get('/api/persons', (req, res) => {
     res.json(persons)
@@ -24,9 +35,17 @@ app.get('/api/persons', (req, res) => {
 
 app.post('/api/persons', (req, res) => {
     const person = req.body
-    person.id = randomId()
-    persons = persons.concat(person)
-    res.json(person)
+    const errors = validationErrors(person)
+    if (errors.length === 0) {
+        person.id = randomId()
+        persons = persons.concat(person)
+        res.json(person)
+    } else {
+        res.status(400).json({errors})
+    }
+
+
+
 })
 
 app.get('/api/persons/:id', (req, res) => {
