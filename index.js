@@ -8,18 +8,26 @@ let persons = [
     {name: "Lea Kutvonen", number: "040-123456", id: 4}
 ]
 
+stripId = (request) => Number(request.params.id)
+
 app.get('/api/persons', (req, res) => {
     res.json(persons)
 })
 
 app.get('/api/persons/:id', (req, res) => {
-    const id = Number(req.params.id)
-    const person = persons.find(p => p.id == id)
+    const id = stripId(req)
+    const person = persons.find(p => p.id === id)
     if (person) {
         res.json(person)
     } else {
         res.status(404).end()
     }
+})
+
+app.delete('/api/persons/:id', (req, res) => {
+    id = stripId(req)
+    persons = persons.filter(person => person.id !== id)
+    res.status(204).end()
 })
 
 app.get('/info', (req, res) => {
