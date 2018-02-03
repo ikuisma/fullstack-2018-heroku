@@ -6,8 +6,10 @@ const app = express()
 const idMax = 10000
 const port = 3001
 
+morgan.token('data', (request, response) => JSON.stringify(request.body))
+
+app.use(morgan(':method :url :data :status :res[content-length] - :response-time ms : '))
 app.use(bodyParser.json())
-app.use(morgan('tiny'))
 
 let persons = [
     {name: "Arto Hellas", number: "040-123456", id: 1},
@@ -45,9 +47,6 @@ app.post('/api/persons', (req, res) => {
     } else {
         res.status(400).json({errors})
     }
-
-
-
 })
 
 app.get('/api/persons/:id', (req, res) => {
