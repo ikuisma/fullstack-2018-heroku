@@ -1,5 +1,6 @@
 const express = require('express')
 const bodyParser = require('body-parser')
+const cors = require('cors')
 const morgan = require('morgan')
 const app = express()
 
@@ -10,6 +11,7 @@ morgan.token('data', (request, response) => JSON.stringify(request.body))
 
 app.use(morgan(':method :url :data :status :res[content-length] - :response-time ms : '))
 app.use(bodyParser.json())
+app.use(cors())
 
 let persons = [
     {name: "Arto Hellas", number: "040-123456", id: 1},
@@ -31,7 +33,6 @@ const validationErrors = (person) => {
     }
     return errors
 }
-
 
 app.get('/api/persons', (req, res) => {
     res.json(persons)
