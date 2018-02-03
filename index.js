@@ -9,6 +9,7 @@ const PORT = process.env.PORT || 3001
 
 morgan.token('data', (request, response) => JSON.stringify(request.body))
 
+app.use(express.static('build'))
 app.use(morgan(':method :url :data :status :res[content-length] - :response-time ms : '))
 app.use(bodyParser.json())
 app.use(cors())
