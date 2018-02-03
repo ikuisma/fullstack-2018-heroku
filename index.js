@@ -1,11 +1,13 @@
 const express = require('express')
 const bodyParser = require('body-parser')
+const morgan = require('morgan')
 const app = express()
 
 const idMax = 10000
 const port = 3001
 
 app.use(bodyParser.json())
+app.use(morgan('tiny'))
 
 let persons = [
     {name: "Arto Hellas", number: "040-123456", id: 1},
