@@ -5,7 +5,7 @@ const morgan = require('morgan')
 const app = express()
 
 const idMax = 10000
-const port = 3001
+const PORT = process.env.PORT || 3001
 
 morgan.token('data', (request, response) => JSON.stringify(request.body))
 
@@ -73,5 +73,6 @@ app.get('/info', (req, res) => {
     `)
 })
 
-app.listen(port)
-console.log(`Server running on port ${port}.`)
+app.listen(PORT, () => {
+    console.log(`Server running on port ${PORT}.`)
+})
