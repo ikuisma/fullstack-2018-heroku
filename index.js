@@ -10,8 +10,8 @@ const PORT = process.env.PORT || 3001
 morgan.token('data', (request, response) => JSON.stringify(request.body))
 
 app.use(express.static('build'))
-app.use(morgan(':method :url :data :status :res[content-length] - :response-time ms : '))
 app.use(bodyParser.json())
+app.use(morgan(':method :url :data :status :res[content-length] - :response-time ms : '))
 app.use(cors())
 
 let persons = [
@@ -40,7 +40,7 @@ app.get('/api/persons', (req, res) => {
 })
 
 app.post('/api/persons', (req, res) => {
-    const person = req.body
+    const person = {...req.body}
     const errors = validationErrors(person)
     if (errors.length === 0) {
         person.id = randomId()
