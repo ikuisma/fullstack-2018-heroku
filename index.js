@@ -3,6 +3,7 @@ const bodyParser = require('body-parser')
 const cors = require('cors')
 const morgan = require('morgan')
 const app = express()
+const Person = require('./models/person')
 
 const idMax = 10000
 const PORT = process.env.PORT || 3001
@@ -14,12 +15,11 @@ app.use(bodyParser.json())
 app.use(morgan(':method :url :data :status :res[content-length] - :response-time ms : '))
 app.use(cors())
 
-let persons = [
-    {name: "Arto Hellas", number: "040-123456", id: 1},
-    {name: "Martti Tienari", number: "040-123456", id: 2},
-    {name: "Arto Järvinen", number: "040-123456", id: 3},
-    {name: "Lea Kutvonen", number: "040-123456", id: 4}
-]
+let persons = []
+
+const userWithNameExists = (name) => {
+    return false
+}
 
 const stripId = (request) => Number(request.params.id)
 
@@ -29,23 +29,38 @@ const validationErrors = (person) => {
     const errors = []
     if (!person.name || !person.number) {
         errors.push('Missing name or number. ')
-    } else if (persons.find(p => p.name == person.name)) {
+    } else if (userWithNameExists(person.name)) {
         errors.push('Name must be unique')
     }
     return errors
 }
 
+const formatPerson = (person) => {
+    return {
+        id: person._id,
+        name: person.name,
+        number: person.number
+    }
+}
+
 app.get('/api/persons', (req, res) => {
-    res.json(persons)
+    Person
+        .find({})
+        .then(p => {
+            res.json(p.map(formatPerson))
+        })
 })
 
 app.post('/api/persons', (req, res) => {
-    const person = {...req.body}
-    const errors = validationErrors(person)
+    const data = {...req.body}
+    const errors = validationErrors(data)
     if (errors.length === 0) {
-        person.id = randomId()
-        persons = persons.concat(person)
-        res.json(person)
+        const person = new Person(data);
+        person
+            .save()
+            .then(person => {
+                res.json(person)
+            })
     } else {
         res.status(400).json({errors})
     }
