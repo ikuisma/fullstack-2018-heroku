@@ -21,7 +21,7 @@ const userWithNameExists = (name) => {
     return false
 }
 
-const stripId = (request) => Number(request.params.id)
+const stripId = (request) => request.params.id
 
 const randomId = () => Math.floor(Math.random() * idMax)
 
@@ -69,9 +69,15 @@ app.get('/api/persons/:id', (req, res) => {
 })
 
 app.delete('/api/persons/:id', (req, res) => {
-    id = stripId(req)
-    persons = persons.filter(person => person.id !== id)
-    res.status(204).end()
+    const id = stripId(req)
+    Person
+        .findByIdAndRemove(id)
+        .then(result => {
+            res.status(204).end()
+        })
+        .catch(error => {
+            res.status(400).send({error: 'malformatted id. '})
+        })
 })
 
 app.get('/info', (req, res) => {
