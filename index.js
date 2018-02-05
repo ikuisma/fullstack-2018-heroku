@@ -76,12 +76,15 @@ app.put('/api/persons/:id', (req, res) => {
 
 app.get('/api/persons/:id', (req, res) => {
     const id = stripId(req)
-    const person = persons.find(p => p.id === id)
-    if (person) {
-        res.json(person)
-    } else {
-        res.status(404).end()
-    }
+    Person.findById(id).then( person => {
+        if (person) {
+            res.json(Person.format(person))
+        } else {
+            res.status(404).end()
+        }
+    }).catch(error => {
+        res.status(400).send({ error: 'malformatted id. '})
+    })
 })
 
 app.delete('/api/persons/:id', (req, res) => {
