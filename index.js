@@ -58,6 +58,22 @@ app.post('/api/persons', (req, res) => {
     }
 })
 
+app.put('/api/persons/:id', (req, res) => {
+    const id = stripId(req)
+    const person = {
+        name: req.body.name,
+        number: req.body.number
+    }
+    Person
+        .findByIdAndUpdate(id, person, { new: true })
+        .then(updatedPerson => {
+            res.json(Person.format(updatedPerson))
+        })
+        .catch(error => {
+            res.status(400).send({ error: 'malformatted id. '})
+        })
+}) 
+
 app.get('/api/persons/:id', (req, res) => {
     const id = stripId(req)
     const person = persons.find(p => p.id === id)
