@@ -35,19 +35,11 @@ const validationErrors = (person) => {
     return errors
 }
 
-const formatPerson = (person) => {
-    return {
-        id: person._id,
-        name: person.name,
-        number: person.number
-    }
-}
-
 app.get('/api/persons', (req, res) => {
     Person
         .find({})
         .then(p => {
-            res.json(p.map(formatPerson))
+            res.json(p.map(Person.format))
         })
 })
 
