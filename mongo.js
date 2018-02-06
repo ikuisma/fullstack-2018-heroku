@@ -12,9 +12,9 @@ const Person = mongoose.model('Person', {
 })
 
 const savePerson = (name, number) => {
-    const person = new Person({name, number})
+    const person = new Person({ name, number })
     person.save().then(result => {mongoose.connection.close()})
-} 
+}
 
 const printPersons = () => {
     console.log('puhelinluettelo')
@@ -30,11 +30,12 @@ const addPerson = (name, number) => {
 }
 
 const main = () => {
-    [ , , ...personParams] = process.argv 
+    var personParams, name, number
+    [ , , ...personParams] = process.argv
     if (personParams.length === 0) {
         printPersons()
     } else {
-        [name, number] = personParams
+        [ name, number ] = personParams
         addPerson(name, number)
     }
 }

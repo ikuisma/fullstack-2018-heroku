@@ -5,26 +5,18 @@ const morgan = require('morgan')
 const app = express()
 const Person = require('./models/person')
 
-const idMax = 10000
 const PORT = process.env.PORT || 3001
 
-morgan.token('data', (request, response) => JSON.stringify(request.body))
+const persons = []
+
+morgan.token('data', ( request ) => JSON.stringify(request.body))
 
 app.use(express.static('build'))
 app.use(bodyParser.json())
 app.use(morgan(':method :url :data :status :res[content-length] - :response-time ms : '))
 app.use(cors())
 
-let persons = []
-
-const userWithNameExists = (name) => {
-    Person.find({name}).then()
-    return false
-}
-
 const stripId = (request) => request.params.id
-
-const randomId = () => Math.floor(Math.random() * idMax)
 
 app.get('/api/persons', (req, res) => {
     Person
@@ -35,10 +27,9 @@ app.get('/api/persons', (req, res) => {
 })
 
 app.post('/api/persons', (req, res) => {
-    const data = {...req.body}
-    errors = []
+    const data = Object.assign({}, req.body)
     Person
-        .findOne({name: data.name})
+        .findOne({ name: data.name })
         .then(person => {
             if (person) {
                 return Promise.reject('Person with name already exists')
@@ -54,7 +45,7 @@ app.post('/api/persons', (req, res) => {
             }
         })
         .then(data => {
-            const person = new Person(data);
+            const person = new Person(data)
             person
                 .save()
                 .then(Person.format)
@@ -62,7 +53,7 @@ app.post('/api/persons', (req, res) => {
                     res.json(person)
                 })
         }).catch(error => {
-            res.status(400).send({error})
+            res.status(400).send({ error })
         })
 })
 
@@ -77,10 +68,10 @@ app.put('/api/persons/:id', (req, res) => {
         .then(updatedPerson => {
             res.json(Person.format(updatedPerson))
         })
-        .catch(error => {
-            res.status(400).send({ error: 'malformatted id. '})
+        .catch( () => {
+            res.status(400).send({ error: 'malformatted id. ' })
         })
-}) 
+})
 
 app.get('/api/persons/:id', (req, res) => {
     const id = stripId(req)
@@ -90,8 +81,8 @@ app.get('/api/persons/:id', (req, res) => {
         } else {
             res.status(404).end()
         }
-    }).catch(error => {
-        res.status(400).send({ error: 'malformatted id. '})
+    }).catch( () => {
+        res.status(400).send({ error: 'malformatted id. ' })
     })
 })
 
@@ -99,11 +90,11 @@ app.delete('/api/persons/:id', (req, res) => {
     const id = stripId(req)
     Person
         .findByIdAndRemove(id)
-        .then(result => {
+        .then( () => {
             res.status(204).end()
         })
-        .catch(error => {
-            res.status(400).send({error: 'malformatted id. '})
+        .catch( () => {
+            res.status(400).send({ error: 'malformatted id. ' })
         })
 })
 

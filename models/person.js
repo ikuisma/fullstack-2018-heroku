@@ -13,7 +13,7 @@ const personSchema = new mongoose.Schema({
     'number': String
 })
 
-personSchema.statics.format = (person) => ({        
+personSchema.statics.format = (person) => ({
     id: person._id,
     name: person.name,
     number: person.number
