@@ -18,22 +18,13 @@ app.use(cors())
 let persons = []
 
 const userWithNameExists = (name) => {
+    Person.find({name}).then()
     return false
 }
 
 const stripId = (request) => request.params.id
 
 const randomId = () => Math.floor(Math.random() * idMax)
-
-const validationErrors = (person) => {
-    const errors = []
-    if (!person.name || !person.number) {
-        errors.push('Missing name or number. ')
-    } else if (userWithNameExists(person.name)) {
-        errors.push('Name must be unique')
-    }
-    return errors
-}
 
 app.get('/api/persons', (req, res) => {
     Person
@@ -45,17 +36,34 @@ app.get('/api/persons', (req, res) => {
 
 app.post('/api/persons', (req, res) => {
     const data = {...req.body}
-    const errors = validationErrors(data)
-    if (errors.length === 0) {
-        const person = new Person(data);
-        person
-            .save()
-            .then(person => {
-                res.json(person)
-            })
-    } else {
-        res.status(400).json({errors})
-    }
+    errors = []
+    Person
+        .findOne({name: data.name})
+        .then(person => {
+            if (person) {
+                return Promise.reject('Person with name already exists')
+            } else {
+                return data
+            }
+        })
+        .then(data => {
+            if (!data.name || !data.number) {
+                return Promise.reject('Missing name or number')
+            } else {
+                return data
+            }
+        })
+        .then(data => {
+            const person = new Person(data);
+            person
+                .save()
+                .then(Person.format)
+                .then(person => {
+                    res.json(person)
+                })
+        }).catch(error => {
+            res.status(400).send({error})
+        })
 })
 
 app.put('/api/persons/:id', (req, res) => {
