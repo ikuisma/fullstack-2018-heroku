@@ -7,8 +7,6 @@ const Person = require('./models/person')
 
 const PORT = process.env.PORT || 3001
 
-const persons = []
-
 morgan.token('data', ( request ) => JSON.stringify(request.body))
 
 app.use(express.static('build'))
@@ -99,10 +97,13 @@ app.delete('/api/persons/:id', (req, res) => {
 })
 
 app.get('/info', (req, res) => {
-    res.send(`
-        <p>puhelinluettelossa on ${persons.length} henkilön tiedot</p>
-        <p>${new Date()}</p>
-    `)
+    Person.find({})
+        .then( persons => {
+            res.send(`
+                <p>puhelinluettelossa on ${persons.length} henkilön tiedot</p>
+                <p>${new Date()}</p>
+            `)
+        })
 })
 
 app.listen(PORT, () => {
